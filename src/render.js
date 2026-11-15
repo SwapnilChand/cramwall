@@ -3,6 +3,8 @@
 import { TEMPLATES } from './themes.js';
 import { rgba } from './color.js';
 
+// `ui` is the usual OS display scale for that screen (2 on Retina Macs), used to size the
+// taskbar, menu bar and dock the text has to stay clear of.
 export const DEVICES = {
   phone: [
     { id: 'iphone-pro', label: 'iPhone 15 / 16 Pro', w: 1179, h: 2556 },
@@ -12,11 +14,14 @@ export const DEVICES = {
     { id: 'pixel', label: 'Pixel 8 Pro', w: 1344, h: 2992 },
   ],
   desktop: [
-    { id: 'qhd', label: '2560 x 1440', w: 2560, h: 1440 },
-    { id: 'fhd', label: '1920 x 1080', w: 1920, h: 1080 },
-    { id: 'uhd', label: '3840 x 2160 (4K)', w: 3840, h: 2160 },
-    { id: 'mbp14', label: 'MacBook Pro 14', w: 3024, h: 1964 },
-    { id: 'mba13', label: 'MacBook Air 13', w: 2560, h: 1664 },
+    { id: 'fhd', label: '1920 x 1080 (Full HD)', w: 1920, h: 1080, ui: 1 },
+    { id: 'qhd', label: '2560 x 1440 (QHD)', w: 2560, h: 1440, ui: 1 },
+    { id: 'uhd', label: '3840 x 2160 (4K)', w: 3840, h: 2160, ui: 1.5 },
+    { id: 'mbp15', label: '2880 x 1800 (MacBook Pro 15)', w: 2880, h: 1800, ui: 2 },
+    { id: 'mbp14', label: '3024 x 1964 (MacBook Pro 14)', w: 3024, h: 1964, ui: 2, notch: true },
+    { id: 'mba13', label: '2560 x 1664 (MacBook Air 13)', w: 2560, h: 1664, ui: 2, notch: true },
+    { id: 'uw', label: '3440 x 1440 (ultrawide)', w: 3440, h: 1440, ui: 1 },
+    { id: 'suw', label: '5120 x 1440 (super ultrawide)', w: 5120, h: 1440, ui: 1 },
   ],
 };
 
@@ -28,12 +33,53 @@ export function findDevice(id) {
   return null;
 }
 
+// A guess at the display scale for a custom size: 100% up to 1440p, then about 1.5x at 4K.
+export const guessUi = (w, h) => Math.max(1, Math.round((h / 1440) * 4) / 4);
+
+export const OSES = ['windows', 'mac', 'linux-top', 'linux-bottom'];
+
+// The parts of a desktop the OS draws over, in pixels. Sizes are the OS defaults at 100%
+// scale times `ui`: Windows 11 taskbar 48 and a column of desktop icons on the left,
+// macOS menu bar 25 (37 under a notch), the Dock about 80 with its gap, icons on the
+// right, a GNOME or Hyprland waybar style top bar 32, a KDE or Cinnamon style panel 48.
+export function desktopChrome(w, h, os = 'windows', ui = 1, notch = false) {
+  const u = (v) => Math.round(v * ui);
+  const parts = [];
+  let top = 0, bottom = 0, left = 0, right = 0;
+  if (os === 'mac') {
+    top = u(notch ? 37 : 25); bottom = u(80); right = u(110);
+    parts.push({ kind: 'bar', x: 0, y: 0, w, h: top });
+    const dw = Math.min(w * 0.6, u(760));
+    parts.push({ kind: 'dock', x: (w - dw) / 2, y: h - u(74), w: dw, h: u(66) });
+    for (let i = 0; i < 3; i++) parts.push({ kind: 'icon', x: w - u(88), y: top + u(18 + i * 92), w: u(62), h: u(62) });
+  } else if (os === 'linux-top' || os === 'linux-bottom') {
+    const bar = u(os === 'linux-top' ? 32 : 48);
+    if (os === 'linux-top') top = bar; else bottom = bar;
+    parts.push({ kind: 'bar', x: 0, y: os === 'linux-top' ? 0 : h - bar, w, h: bar });
+  } else {
+    bottom = u(48); left = u(100);
+    parts.push({ kind: 'bar', x: 0, y: h - bottom, w, h: bottom });
+    for (let i = 0; i < 4; i++) parts.push({ kind: 'icon', x: u(16), y: u(14 + i * 92), w: u(62), h: u(62) });
+  }
+  return { top, bottom, left, right, parts, ui };
+}
+
 // Where text may go. Phones keep clear of the lock screen clock and widgets (top ~30%)
 // and the flashlight, camera and notification stack (bottom ~13%). Desktops keep clear of
-// the menu bar, desktop icons and the dock or taskbar.
-export function safeArea(w, h, kind) {
+// whatever the chosen OS draws, plus a margin, and very wide screens keep the text in a
+// centred block so it never stretches from one edge to the other.
+export function safeArea(w, h, kind, opts = {}) {
   if (kind === 'phone') return { x: w * 0.075, y: h * 0.305, w: w * 0.85, h: h * 0.565 };
-  return { x: w * 0.075, y: h * 0.08, w: w * 0.85, h: h * 0.79 };
+  const ch = desktopChrome(w, h, opts.os, opts.ui || guessUi(w, h), opts.notch);
+  const mY = h * 0.065, mX = Math.max(h * 0.075, w * 0.045);
+  const x0 = ch.left + mX, x1 = w - ch.right - mX;
+  const y0 = ch.top + mY, y1 = h - ch.bottom - mY * 1.15;
+  // Mirror the side insets so the block stays centred on the screen, not in the gap.
+  const side = Math.max(x0, w - x1);
+  let aw = w - side * 2;
+  const maxW = (y1 - y0) * 3;
+  if (aw > maxW) aw = maxW;
+  return { x: (w - aw) / 2, y: y0, w: aw, h: y1 - y0 };
 }
 
 // ---------- text measuring and wrapping ----------
@@ -204,8 +250,14 @@ function tryLayout(t, c, sheet, area, kind, k, B, measure) {
   const ins = frameInsets(t, B);
   const inner = { x: area.x + ins.left, y: area.y + ins.top, w: area.w - ins.left - ins.right, h: area.h - ins.top - ins.bottom };
   const gap = B * t.m.colGap;
-  const colW = (inner.w - gap * (k - 1)) / k;
+  let colW = (inner.w - gap * (k - 1)) / k;
   if (colW < B * 12) return null;
+  // On a desktop with few sections, keep lines to a readable length and centre the block.
+  if (kind === 'desktop' && colW > B * 34) {
+    colW = B * 34;
+    const used = colW * k + gap * (k - 1);
+    inner.x += (inner.w - used) / 2; inner.w = used;
+  }
 
   // Header
   const header = [];
@@ -220,7 +272,7 @@ function tryLayout(t, c, sheet, area, kind, k, B, measure) {
   hy += tLines.length * tLH + (t.snap ? s.L : s.B * t.m.titleGap);
   if (t.id === 'blueprint') { header.push({ type: 'rule', y: hy - s.B * 0.9, w: inner.w, color: c.rule, double: true }); hy += s.B * 0.2; }
 
-  const secs = sheet.sections.map((sec, i) => layoutSection(t, c, s, sec, i, colW, measure));
+  const secs = sheet.sections.map((sec, i) => layoutSection(t, c, s, sec, i + (sheet.offset || 0), colW, measure));
   const sGap = t.snap ? s.L * t.m.sectionGap : B * t.m.sectionGap;
   const groups = partition(secs.map((x) => x.h), k, sGap);
   const colHeights = groups.map((g) => g.reduce((a, i, j) => a + secs[i].h + (j ? sGap : 0), 0));
@@ -230,14 +282,19 @@ function tryLayout(t, c, sheet, area, kind, k, B, measure) {
 }
 
 // Find the biggest font that fits, for each sensible column count, and keep the best.
-function fit(t, c, sheet, area, kind, w, h, measure) {
+// Desktop text scales with the screen height, so a 4K or Retina wallpaper reads at the same
+// size as 1080p does at 100%. `maxB` caps the body size (dual monitors share one size).
+function fit(t, c, sheet, area, kind, w, h, measure, maxB = Infinity) {
   const unit = kind === 'phone' ? w * 0.0235 : h * 0.0175;
   const base = unit * (t.m.scale || 1);
-  const ks = kind === 'phone' ? [1, 2] : area.w / area.h > 1.9 ? [3, 4, 5] : [3, 4];
-  const minS = 0.72, maxS = kind === 'phone' ? 1.45 : 1.5;
+  const aspect = area.w / area.h;
+  const n = sheet.sections.length;
+  let ks = (kind === 'phone' ? [1, 2] : aspect > 2.6 ? [4, 5, 6] : aspect > 1.6 ? [3, 4, 5] : [3, 4]).filter((k) => k <= n);
+  // Fewer sections than columns (half a sheet on each of two monitors): one column each.
+  if (!ks.length) ks = [n];
+  const minS = 0.72, maxS = Math.min(kind === 'phone' ? 1.45 : 1.5, Math.max(minS, maxB / base));
   let best = null;
   for (const k of ks) {
-    if (k > sheet.sections.length) continue;
     let lo = minS, hi = maxS, found = null;
     for (let i = 0; i < 14; i++) {
       const mid = (lo + hi) / 2;
@@ -350,7 +407,7 @@ function drawFrame(ctx, t, c, r) {
   ctx.textAlign = 'left';
 }
 
-// opts: { width, height, kind, template, color, mode }
+// opts: { width, height, kind, template, color, mode, os, ui, notch, maxB, alignH }
 // Returns { overflow, fontPx, columns } so the UI can warn when text had to shrink too far.
 export function renderSheet(canvas, sheet, opts) {
   const { width: w, height: h, kind } = opts;
@@ -361,11 +418,11 @@ export function renderSheet(canvas, sheet, opts) {
   ctx.textBaseline = 'alphabetic';
   ctx.textRendering = 'optimizeLegibility';
   const measure = measurer(ctx);
-  const area = safeArea(w, h, kind);
-  const r = fit(t, c, sheet, area, kind, w, h, measure);
+  const area = safeArea(w, h, kind, opts);
+  const r = fit(t, c, sheet, area, kind, w, h, measure, opts.maxB);
 
   // Centre the block vertically in the safe area when there is room left over.
-  const spare = r.inner.h - r.total;
+  const spare = r.inner.h - Math.max(r.total, opts.alignH || 0);
   let oy = r.inner.y + (spare > 0 ? (t.snap ? Math.floor(spare / 2 / r.s.L) * r.s.L : spare * (kind === 'phone' ? 0.35 : 0.45)) : 0);
   const shift = oy - r.inner.y;
   const inner = { ...r.inner, y: oy };
@@ -383,7 +440,35 @@ export function renderSheet(canvas, sheet, opts) {
       y += r.secs[i].h;
     });
   });
-  return { overflow: !!r.overflow, fontPx: Math.round(r.B), columns: r.k, shift };
+  return { overflow: !!r.overflow, fontPx: Math.round(r.B), B: r.B, total: r.total, columns: r.k, shift };
+}
+
+// Two monitors: split the sections in half by size, keep the title on both, number the
+// right hand sections on from the left, and give both screens one font size and one top
+// line so the pair reads as a single sheet.
+export function splitSheet(sheet) {
+  const n = sheet.sections.length;
+  const weight = sheet.sections.map((s) => 1.6 + s.items.reduce((a, it) => a + 1 + (it.code ? 0.8 : 0), 0));
+  const total = weight.reduce((a, b) => a + b, 0);
+  let cut = 1, run = 0, best = Infinity;
+  for (let i = 1; i < n; i++) {
+    run += weight[i - 1];
+    const d = Math.abs(total / 2 - run);
+    if (d < best) { best = d; cut = i; }
+  }
+  return [
+    { title: sheet.title, sections: sheet.sections.slice(0, cut) },
+    { title: sheet.title, sections: sheet.sections.slice(cut), offset: cut },
+  ];
+}
+
+export function renderDual(canvases, sheet, opts) {
+  const halves = splitSheet(sheet);
+  const first = halves.map((h, i) => renderSheet(canvases[i], h, opts));
+  const maxB = Math.min(...first.map((x) => x.B));
+  const pass = halves.map((h, i) => renderSheet(canvases[i], h, { ...opts, maxB }));
+  const alignH = Math.max(...pass.map((x) => x.total));
+  return halves.map((h, i) => renderSheet(canvases[i], h, { ...opts, maxB, alignH }));
 }
 
 // A sheet to show before anything is generated.

@@ -39,6 +39,18 @@
             <span>by</span>
             <input id="ch" type="number" min="480" max="7680" inputmode="numeric" aria-label="Height in pixels">
           </div>
+          <div class="os" id="os-row" hidden>
+            <div class="seg small" id="os" aria-label="Operating system">
+              <button type="button" data-os="windows" aria-pressed="true">Windows</button>
+              <button type="button" data-os="mac" aria-pressed="false">macOS</button>
+              <button type="button" data-os="linux" aria-pressed="false">Linux</button>
+            </div>
+            <div class="seg small" id="bar" aria-label="Linux panel position" hidden>
+              <button type="button" data-bar="top" aria-pressed="true">Bar on top</button>
+              <button type="button" data-bar="bottom" aria-pressed="false">Panel at bottom</button>
+            </div>
+            <label class="check"><input type="checkbox" id="dual"> Two monitors, two PNGs</label>
+          </div>
         </fieldset>
 
         <fieldset class="field">
@@ -91,13 +103,23 @@
     </form>
 
     <section class="stage" aria-label="Preview">
-      <div class="frame" id="frame">
-        <canvas id="canvas" aria-label="Wallpaper preview"></canvas>
-        <div class="lock" id="lock" aria-hidden="true"><span class="lock-date"></span><span class="lock-time">9:41</span></div>
+      <div class="frames" id="frames">
+        <div class="frame" id="frame">
+          <canvas id="canvas" aria-label="Wallpaper preview"></canvas>
+          <div class="lock" id="lock" aria-hidden="true"><span class="lock-date"></span><span class="lock-time">9:41</span></div>
+          <div class="chrome" aria-hidden="true"></div>
+        </div>
+        <div class="frame" id="frame2" hidden>
+          <canvas id="canvas2" aria-label="Right monitor preview"></canvas>
+          <div class="chrome" aria-hidden="true"></div>
+        </div>
       </div>
       <div class="stage-actions">
-        <button class="primary" id="download" type="button">Download PNG</button>
-        <label class="check"><input type="checkbox" id="show-lock" checked> Show the lock screen clock</label>
+        <div class="downloads">
+          <button class="primary" id="download" type="button">Download PNG</button>
+          <button class="primary" id="download2" type="button" hidden>Download right</button>
+        </div>
+        <label class="check"><input type="checkbox" id="show-lock" checked> <span id="show-lock-text">Show the lock screen clock</span></label>
         <p class="hint" id="meta"></p>
       </div>
     </section>

@@ -15,12 +15,18 @@ Type a few topics, pick a look and a colour, choose your screen size, download a
 
 <img src="samples/python-asyncio-terminal-desktop-2560x1440.png" alt="Python asyncio cheatsheet as a 2560 x 1440 desktop wallpaper">
 
+<img src="samples/pc/minimal-uw.png" alt="Git cheatsheet on a 3440 x 1440 ultrawide, minimal look">
+
+More desktop samples at 1080p, 1440p, 4K, ultrawide, MacBook and dual monitor sizes are in [`samples/pc`](samples/pc).
+
 ## What it does
 
 - **Topics in, cheatsheet out.** "kubernetes networking, linux namespaces" becomes 4 to 8 sections of terms, one line explanations and real commands.
 - **Four looks.** Minimal, terminal, blueprint and notebook. Pick any colour and the whole palette is derived from it, with text contrast checked (4.5:1 or better).
-- **Exact sizes.** iPhone, Pixel and Android presets, desktop from 1080p to 4K, or any custom size. Drawn on a canvas at full resolution, so text is pixel sharp.
-- **Safe areas.** On phones the text stays under the lock screen clock and above the torch and camera buttons. On desktops it stays clear of the menu bar, icons and the dock.
+- **Exact sizes.** iPhone, Pixel and Android presets, desktops from 1080p, 1440p and 4K to MacBook Retina screens (2880 x 1800, 3024 x 1964) and ultrawides (3440 x 1440, 5120 x 1440), or any custom size. Drawn on a canvas at full resolution, so text is pixel sharp.
+- **Safe areas.** On phones the text stays under the lock screen clock and above the torch and camera buttons. On desktops you pick your OS and the text stays clear of what it draws: the Windows taskbar and desktop icons, the macOS menu bar, Dock and icons, or a Linux top bar (GNOME, Hyprland waybar) or bottom panel (KDE). Bar sizes follow the screen's usual display scale. The preview can show them on top.
+- **Readable on big screens.** Desktop text scales with the screen, so 4K and Retina wallpapers read like 1080p does at 100%. Ultrawides get more columns in a centred block with wide margins, so lines never run edge to edge.
+- **Two monitors.** Tick "Two monitors" and the sheet splits across two PNGs, one per screen, with one font size and one top line so the pair reads as a single sheet.
 - **Auto fit.** Picks the column count and the biggest font that fits your screen.
 - **Edit anything.** Change any line, remove items, or regenerate one section without touching the rest.
 - **Optional context.** A sentence about you, a GitHub username or a resume. It only sets the level (beginner, intermediate, advanced) and the language used in examples.
@@ -89,11 +95,13 @@ topics + level ──> /api/generate ──> model returns strict JSON ──> v
 ```bash
 npm install
 GROQ_API_KEY=your_key SHEETS_PER_DAY=0 npm run dev   # site + API with hot reload on :5173
-npm test                                              # schema, validation and provider tests
+npm test                                              # schema, validation, provider and layout tests
 node scripts/render.mjs samples/sheets/k8s-phone.json samples/tmp blueprint iphone-pro '#2f6fd6'
+node scripts/render.mjs samples/sheets/k8s-desktop.json samples/tmp minimal fhd,uhd,uw '#41d6a0' dark mac
+node scripts/render.mjs samples/sheets/k8s-desktop.json samples/tmp minimal fhd '#41d6a0' dark windows dual
 ```
 
-`scripts/render.mjs` renders any sheet JSON through the real app in headless Chromium, which is how the samples in this README were made. Set `CHROME` if Chromium is not at `/usr/bin/chromium`.
+`scripts/render.mjs` renders any sheet JSON through the real app in headless Chromium, which is how the samples in this README were made. Devices are the ids in `src/render.js` (`fhd`, `qhd`, `uhd`, `mbp14`, `uw`, `suw`, ...) or `WIDTHxHEIGHT`; the OS is `windows`, `mac`, `linux-top` or `linux-bottom`. Set `BASE` to the dev server URL and `CHROME` if Chromium is not at `/usr/bin/chromium`.
 
 Project layout:
 

@@ -1,6 +1,6 @@
 import './site.css';
 import { fontsReady } from './fonts.js';
-import { renderSheet, DEVICES, SAMPLE } from './render.js';
+import { renderSheet, renderDual, desktopChrome, guessUi, DEVICES, SAMPLE } from './render.js';
 import { TEMPLATES, PRESETS } from './themes.js';
 import { githubSummary, resumeText } from './context.js';
 
@@ -11,6 +11,8 @@ const saved = (() => { try { return JSON.parse(localStorage.getItem(STORE)) || {
 const state = {
   topics: '', kind: 'phone', device: 'iphone-pro', custom: { phone: [1179, 2556], desktop: [2560, 1440] },
   template: 'minimal', color: '#8fb3ff', mode: 'dark', sheet: null, profile: null, ctxKind: 'words',
+  os: /Mac/.test(navigator.platform) ? 'mac' : /Linux/.test(navigator.platform) && !/Android/.test(navigator.userAgent) ? 'linux' : 'windows',
+  bar: 'top', dual: false,
   ...saved,
 };
 state.sheet ||= structuredClone(SAMPLE);
@@ -18,41 +20,67 @@ let ctxText = '';
 let busy = false;
 
 const save = () => {
-  const { topics, kind, device, custom, template, color, mode, sheet, profile } = state;
-  try { localStorage.setItem(STORE, JSON.stringify({ topics, kind, device, custom, template, color, mode, sheet, profile })); } catch {}
+  const { topics, kind, device, custom, template, color, mode, sheet, profile, os, bar, dual } = state;
+  try { localStorage.setItem(STORE, JSON.stringify({ topics, kind, device, custom, template, color, mode, sheet, profile, os, bar, dual })); } catch {}
 };
 
 function size() {
   if (state.device === 'custom') {
-    const [w, h] = state.custom[state.kind];
-    return { w: clamp(w), h: clamp(h) };
+    const [w, h] = state.custom[state.kind].map(clamp);
+    return { w, h, ui: guessUi(w, h), notch: false };
   }
   const d = DEVICES[state.kind].find((x) => x.id === state.device) || DEVICES[state.kind][0];
-  return { w: d.w, h: d.h };
+  return { w: d.w, h: d.h, ui: d.ui || 1, notch: !!d.notch };
 }
+const osKey = () => (state.os === 'linux' ? `linux-${state.bar}` : state.os);
+const dual = () => state.kind === 'desktop' && state.dual;
 const clamp = (v) => Math.min(7680, Math.max(480, Math.round(+v || 0)));
 
 // ---------- rendering ----------
 const canvas = $('#canvas');
+const canvas2 = $('#canvas2');
 let raf = 0;
 function draw() {
   cancelAnimationFrame(raf);
   raf = requestAnimationFrame(async () => {
     await fontsReady();
-    const { w, h } = size();
-    const info = renderSheet(canvas, state.sheet, { width: w, height: h, kind: state.kind, template: state.template, color: state.color, mode: state.mode });
-    const frame = $('#frame');
-    const px = canvas.getContext('2d').getImageData(Math.round(w / 2), Math.round(h * 0.12), 1, 1).data;
-    const lightBg = 0.2126 * px[0] + 0.7152 * px[1] + 0.0722 * px[2] > 150;
-    frame.className = `frame ${state.kind}${lightBg ? ' light-bg' : ''}`;
-    frame.style.aspectRatio = `${w} / ${h}`;
-    $('#lock').hidden = !(state.kind === 'phone' && $('#show-lock').checked);
-    $('#show-lock').closest('label').hidden = state.kind !== 'phone';
-    $('#download').textContent = `Download PNG, ${w} x ${h}`;
-    $('#meta').textContent = info.overflow
+    const { w, h, ui, notch } = size();
+    const opts = { width: w, height: h, kind: state.kind, template: state.template, color: state.color, mode: state.mode, os: osKey(), ui, notch };
+    const two = dual();
+    const infos = two ? renderDual([canvas, canvas2], state.sheet, opts) : [renderSheet(canvas, state.sheet, opts)];
+    const show = $('#show-lock').checked;
+    const chrome = state.kind === 'desktop' ? desktopChrome(w, h, opts.os, ui, notch) : null;
+    $('#frames').classList.toggle('dual', two);
+    $('#frame2').hidden = !two;
+    [canvas, canvas2].forEach((cv, i) => {
+      const frame = cv.parentElement;
+      if (i && !two) return;
+      const px = cv.getContext('2d').getImageData(Math.round(w / 2), Math.round(h * 0.12), 1, 1).data;
+      const lightBg = 0.2126 * px[0] + 0.7152 * px[1] + 0.0722 * px[2] > 150;
+      frame.className = `frame ${state.kind}${lightBg ? ' light-bg' : ''}`;
+      frame.style.aspectRatio = `${w} / ${h}`;
+      const layer = frame.querySelector('.chrome');
+      layer.innerHTML = '';
+      if (!chrome || !show) return;
+      // The Dock only sits on the main screen.
+      for (const p of chrome.parts) {
+        if (i && p.kind === 'dock') continue;
+        const el = document.createElement('i');
+        el.className = p.kind;
+        Object.assign(el.style, { left: `${(p.x / w) * 100}%`, top: `${(p.y / h) * 100}%`, width: `${(p.w / w) * 100}%`, height: `${(p.h / h) * 100}%` });
+        layer.append(el);
+      }
+    });
+    $('#lock').hidden = !(state.kind === 'phone' && show);
+    $('#show-lock-text').textContent = state.kind === 'phone' ? 'Show the lock screen clock' : state.os === 'mac' ? 'Show the menu bar and Dock' : state.os === 'linux' ? 'Show the panel' : 'Show the taskbar and icons';
+    $('#download').textContent = two ? `Download left, ${w} x ${h}` : `Download PNG, ${w} x ${h}`;
+    $('#download2').hidden = !two;
+    $('#download2').textContent = `Download right, ${w} x ${h}`;
+    const over = infos.some((x) => x.overflow);
+    $('#meta').textContent = over
       ? 'Too much text for this screen. Shorten a few lines or remove an item.'
-      : `${info.columns} column${info.columns > 1 ? 's' : ''}, body text ${info.fontPx}px`;
-    $('#meta').classList.toggle('warn', info.overflow);
+      : `${infos.map((x) => x.columns).join(' + ')} column${infos[0].columns > 1 || two ? 's' : ''}, body text ${infos[0].fontPx}px`;
+    $('#meta').classList.toggle('warn', over);
   });
 }
 
@@ -65,6 +93,7 @@ function fillDevices() {
   if (![...sel.options].some((o) => o.value === state.device)) state.device = DEVICES[state.kind][0].id;
   sel.value = state.device;
   const custom = state.device === 'custom';
+  $('#os-row').hidden = state.kind !== 'desktop';
   $('#custom-size').hidden = !custom;
   [$('#cw').value, $('#ch').value] = state.custom[state.kind];
 }
@@ -77,6 +106,10 @@ function syncControls() {
   $('#topics').value = state.topics;
   pressed($('#kind'), 'kind', state.kind);
   fillDevices();
+  pressed($('#os'), 'os', state.os);
+  pressed($('#bar'), 'bar', state.bar);
+  $('#bar').hidden = state.os !== 'linux';
+  $('#dual').checked = state.dual;
   pressed($('#looks'), 'template', state.template);
   pressed($('#mode'), 'mode', state.mode);
   $('#mode').hidden = !TEMPLATES[state.template].modes;
@@ -228,13 +261,13 @@ async function readGithub() {
 }
 
 // ---------- download ----------
-function download() {
+function download(cv, side) {
   const { w, h } = size();
   const name = (state.sheet.title || 'cheatsheet').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  canvas.toBlob((blob) => {
+  cv.toBlob((blob) => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `${name}-${w}x${h}.png`;
+    a.download = `${name}-${w}x${h}${side ? `-${side}` : ''}.png`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   }, 'image/png');
@@ -266,7 +299,11 @@ $('#swatches').addEventListener('click', (e) => { const b = e.target.closest('bu
 $('#color').addEventListener('input', (e) => update({ color: e.target.value }));
 $('#mode').addEventListener('click', (e) => { const m = e.target.closest('button')?.dataset.mode; if (m) update({ mode: m }); });
 $('#show-lock').addEventListener('change', draw);
-$('#download').addEventListener('click', download);
+$('#download').addEventListener('click', () => download(canvas, dual() ? 'left' : ''));
+$('#download2').addEventListener('click', () => download(canvas2, 'right'));
+$('#os').addEventListener('click', (e) => { const o = e.target.closest('button')?.dataset.os; if (o) update({ os: o }); });
+$('#bar').addEventListener('click', (e) => { const b = e.target.closest('button')?.dataset.bar; if (b) update({ bar: b }); });
+$('#dual').addEventListener('change', (e) => update({ dual: e.target.checked }));
 
 document.querySelectorAll('[role=tab]').forEach((tab) => tab.addEventListener('click', () => {
   document.querySelectorAll('[role=tab]').forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
@@ -299,5 +336,11 @@ window.__cramwall = {
     const c = document.createElement('canvas');
     const info = renderSheet(c, sheet, opts);
     return { info, png: c.toDataURL('image/png') };
+  },
+  async renderDual(sheet, opts) {
+    await fontsReady();
+    const cs = [document.createElement('canvas'), document.createElement('canvas')];
+    const info = renderDual(cs, sheet, opts);
+    return { info, pngs: cs.map((c) => c.toDataURL('image/png')) };
   },
 };
