@@ -43,6 +43,7 @@ export const profileSchema = {
 export function tidy(s, max) {
   let t = String(s ?? '')
     .replace(/\\n|\r?\n|\t/g, ' ')
+    .replace(/\\(["'])/g, '$1')
     .replace(/\s*[→⟶]\s*/g, ' -> ')
     .replace(/[‐-―−]/g, '-')
     .replace(/[‘’]/g, "'")

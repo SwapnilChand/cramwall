@@ -9,6 +9,7 @@ const section = (n, items = 3) => ({ heading: `Section ${n}`, items: Array.from(
 test('tidy normalises typography and trims to a word boundary', () => {
   assert.equal(tidy('a — b “c” → d'), 'a - b "c" -> d'.slice(0, 200));
   assert.equal(tidy('literal\\nnewline', 50), 'literal newline');
+  assert.equal(tidy('ports: - \\"80:80\\"', 50), 'ports: - "80:80"');
   assert.equal(tidy('one two three four', 10), 'one two');
 });
 

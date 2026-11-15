@@ -15,7 +15,7 @@ Rules:
 - Each section heading: 1 to 3 words.
 - term: the thing to remember, 1 to 3 words (a command name, a concept, a state).
 - line: one plain sentence explaining it. Never start by repeating the term. No trailing period. No filler like "This is used to".
-- code: one line, at most 44 characters, a real command, flag, config key or tiny snippet. Use "" when nothing short fits. Never pseudo code, never a newline.
+- code: one line, at most 44 characters, plain text with no escaped quotes, a real command, flag, config key or tiny snippet. Use "" when nothing short fits. Never pseudo code, never a newline.
 - Use plain ASCII. Use a normal hyphen, never long dashes.
 - When several topics are given, give each topic at least one section. Order sections from fundamentals to advanced.
 - The term must not just repeat the code. Never repeat an item. Prefer the things people forget and look up again.
