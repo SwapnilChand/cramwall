@@ -1,0 +1,90 @@
+{
+ "title": "Kubernetes networking",
+ "sections": [
+  {
+   "heading": "Pod CIDR",
+   "items": [
+    {
+     "term": "Cluster CIDR",
+     "line": "Range of IPs assigned to pods",
+     "code": "--cluster-cidr=10.244.0.0/16"
+    },
+    {
+     "term": "Pod IP",
+     "line": "Unique address for each pod",
+     "code": "status.podIP"
+    },
+    {
+     "term": "IPAM plugin",
+     "line": "Allocates pod IPs automatically",
+     "code": "\"ipam\": {\"type\": \"host-local\"}"
+    }
+   ]
+  },
+  {
+   "heading": "Service Types",
+   "items": [
+    {
+     "term": "ClusterIP",
+     "line": "Internal virtual IP reachable inside cluster",
+     "code": "type: ClusterIP"
+    },
+    {
+     "term": "NodePort",
+     "line": "Exposes service on each node's port",
+     "code": "type: NodePort"
+    },
+    {
+     "term": "LoadBalancer",
+     "line": "Provisions external LB via cloud",
+     "code": "type: LoadBalancer"
+    }
+   ]
+  },
+  {
+   "heading": "NetworkPolicy",
+   "items": [
+    {
+     "term": "Deny all",
+     "line": "Default deny traffic to pods",
+     "code": "policyTypes: [Ingress]"
+    },
+    {
+     "term": "Allow from",
+     "line": "Permit traffic from specific pod selector",
+     "code": "from: [{podSelector: {}}]"
+    },
+    {
+     "term": "Apply yaml",
+     "line": "Create policy with kubectl apply",
+     "code": "kubectl apply -f np.yaml"
+    }
+   ]
+  },
+  {
+   "heading": "Linux Namespaces",
+   "items": [
+    {
+     "term": "Create ns",
+     "line": "Create a new network namespace",
+     "code": "ip netns add demo"
+    },
+    {
+     "term": "Exec in ns",
+     "line": "Run a command inside the namespace",
+     "code": "ip netns exec demo bash"
+    },
+    {
+     "term": "Show ns",
+     "line": "List existing network namespaces",
+     "code": "ip netns list"
+    },
+    {
+     "term": "Delete ns",
+     "line": "Remove a network namespace",
+     "code": "ip netns del demo"
+    }
+   ]
+  }
+ ]
+}

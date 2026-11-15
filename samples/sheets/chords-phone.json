@@ -1,0 +1,95 @@
+{
+ "title": "Piano chords and scales",
+ "sections": [
+  {
+   "heading": "Triads",
+   "items": [
+    {
+     "term": "Major triad",
+     "line": "Root-third-fifth intervals",
+     "code": "C E G"
+    },
+    {
+     "term": "Minor triad",
+     "line": "Root-flat-third-fifth intervals",
+     "code": "C Eb G"
+    },
+    {
+     "term": "Diminished",
+     "line": "Root-flat-third-diminished-fifth",
+     "code": "C Eb Gb"
+    }
+   ]
+  },
+  {
+   "heading": "Sevenths",
+   "items": [
+    {
+     "term": "Dominant 7",
+     "line": "Major triad plus minor seventh",
+     "code": "C E G Bb"
+    },
+    {
+     "term": "Major 7",
+     "line": "Major triad plus major seventh",
+     "code": "C E G B"
+    },
+    {
+     "term": "Minor 7",
+     "line": "Minor triad plus minor seventh",
+     "code": "C Eb G Bb"
+    },
+    {
+     "term": "Half-diminished",
+     "line": "Diminished triad plus minor seventh",
+     "code": "C Eb Gb Bb"
+    }
+   ]
+  },
+  {
+   "heading": "Scales",
+   "items": [
+    {
+     "term": "Major scale",
+     "line": "Whole-whole-half-whole-whole-whole-half pattern",
+     "code": "W W H W W W H"
+    },
+    {
+     "term": "Natural minor",
+     "line": "Whole-half-whole-whole-half-whole-whole pattern",
+     "code": "W H W W H W W"
+    },
+    {
+     "term": "Harmonic minor",
+     "line": "Raise seventh degree of natural minor",
+     "code": "W H W W H Aug2 H"
+    },
+    {
+     "term": "Pentatonic",
+     "line": "Five-note scale, omit 4th and 7th degrees",
+     "code": "C D E G A"
+    }
+   ]
+  },
+  {
+   "heading": "Progressions",
+   "items": [
+    {
+     "term": "I-IV-V",
+     "line": "Primary chords in major key",
+     "code": "C F G"
+    },
+    {
+     "term": "ii-V-I",
+     "line": "Jazz minor-dominant-tonic sequence",
+     "code": "Dm G C"
+    },
+    {
+     "term": "Circle of fifths",
+     "line": "Root moves up a fifth each step",
+     "code": "C G D A E B F#"
+    }
+   ]
+  }
+ ]
+}

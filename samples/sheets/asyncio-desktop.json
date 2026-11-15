@@ -1,0 +1,155 @@
+{
+ "title": "Python asyncio",
+ "sections": [
+  {
+   "heading": "Basics",
+   "items": [
+    {
+     "term": "async def",
+     "line": "defines a coroutine function",
+     "code": "async def func(): ..."
+    },
+    {
+     "term": "await",
+     "line": "suspends until awaitable completes",
+     "code": "result = await coro()"
+    },
+    {
+     "term": "coroutine",
+     "line": "function returning coroutine object",
+     "code": "coro = func()"
+    },
+    {
+     "term": "event loop",
+     "line": "core scheduler for async tasks",
+     "code": "loop = asyncio.new_event_loop()"
+    },
+    {
+     "term": "run",
+     "line": "entry point to execute top-level coroutine",
+     "code": "asyncio.run(main())"
+    }
+   ]
+  },
+  {
+   "heading": "Loop",
+   "items": [
+    {
+     "term": "create loop",
+     "line": "instantiate a fresh event loop",
+     "code": "loop = asyncio.new_event_loop()"
+    },
+    {
+     "term": "to_thread",
+     "line": "run a blocking function in a worker thread",
+     "code": "await asyncio.to_thread(func)"
+    },
+    {
+     "term": "run forever",
+     "line": "start loop to process tasks indefinitely",
+     "code": "loop.run_forever()"
+    },
+    {
+     "term": "stop loop",
+     "line": "request loop to stop after current callbacks",
+     "code": "loop.stop()"
+    },
+    {
+     "term": "close loop",
+     "line": "release resources after stopping",
+     "code": "loop.close()"
+    }
+   ]
+  },
+  {
+   "heading": "Tasks",
+   "items": [
+    {
+     "term": "create task",
+     "line": "schedule coroutine as Task object",
+     "code": "task = asyncio.create_task(coro())"
+    },
+    {
+     "term": "gather",
+     "line": "run several awaitables concurrently and collect results",
+     "code": "results = await asyncio.gather(a,b,c)"
+    },
+    {
+     "term": "as completed",
+     "line": "iterate tasks as they finish",
+     "code": "for t in asyncio.as_completed(tasks):"
+    },
+    {
+     "term": "shield",
+     "line": "protect awaitable from cancellation",
+     "code": "result = await asyncio.shield(coro())"
+    },
+    {
+     "term": "current task",
+     "line": "retrieve task currently executing",
+     "code": "task = asyncio.current_task()"
+    }
+   ]
+  },
+  {
+   "heading": "Cancellation",
+   "items": [
+    {
+     "term": "cancel",
+     "line": "request task termination",
+     "code": "task.cancel()"
+    },
+    {
+     "term": "cancelled",
+     "line": "check if task was cancelled",
+     "code": "task.cancelled()"
+    },
+    {
+     "term": "CancelledError",
+     "line": "exception raised when awaiting cancelled task",
+     "code": "except asyncio.CancelledError:"
+    },
+    {
+     "term": "timeout",
+     "line": "limit awaitable duration with wait_for",
+     "code": "await asyncio.wait_for(coro(),5)"
+    },
+    {
+     "term": "TaskGroup",
+     "line": "run tasks together, cancel the rest on error",
+     "code": "async with asyncio.TaskGroup() as tg:"
+    }
+   ]
+  },
+  {
+   "heading": "Synchronization",
+   "items": [
+    {
+     "term": "Lock",
+     "line": "exclusive async primitive",
+     "code": "lock = asyncio.Lock()"
+    },
+    {
+     "term": "Event",
+     "line": "simple flag for coroutines",
+     "code": "event = asyncio.Event()"
+    },
+    {
+     "term": "Condition",
+     "line": "wait for complex state changes",
+     "code": "cond = asyncio.Condition()"
+    },
+    {
+     "term": "Semaphore",
+     "line": "limit concurrent access count",
+     "code": "sem = asyncio.Semaphore(3)"
+    },
+    {
+     "term": "Queue",
+     "line": "Async FIFO for handing work between coroutines",
+     "code": "q = asyncio.Queue()"
+    }
+   ]
+  }
+ ]
+}

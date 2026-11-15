@@ -1,0 +1,95 @@
+{
+ "title": "Python asyncio",
+ "sections": [
+  {
+   "heading": "Basics",
+   "items": [
+    {
+     "term": "Event loop",
+     "line": "The scheduler that runs your coroutines",
+     "code": "loop = asyncio.get_running_loop()"
+    },
+    {
+     "term": "Run coroutine",
+     "line": "Execute top-level coroutine",
+     "code": "asyncio.run(main())"
+    },
+    {
+     "term": "Coroutine",
+     "line": "Function defined with async def",
+     "code": "async def fetch(url):"
+    },
+    {
+     "term": "Await",
+     "line": "Pause until awaitable completes",
+     "code": "data = await resp.text()"
+    }
+   ]
+  },
+  {
+   "heading": "Tasks",
+   "items": [
+    {
+     "term": "Create task",
+     "line": "Schedule coroutine for concurrent execution",
+     "code": "task = asyncio.create_task(coro())"
+    },
+    {
+     "term": "Gather",
+     "line": "Run many awaitables and collect results",
+     "code": "results = await asyncio.gather(t1, t2)"
+    },
+    {
+     "term": "Cancel",
+     "line": "Stop a running task",
+     "code": "task.cancel()"
+    },
+    {
+     "term": "Task group",
+     "line": "Manage multiple tasks with context",
+     "code": "async with asyncio.TaskGroup() as tg:"
+    }
+   ]
+  },
+  {
+   "heading": "Sync",
+   "items": [
+    {
+     "term": "Lock",
+     "line": "Prevent simultaneous access to shared resource",
+     "code": "lock = asyncio.Lock()"
+    },
+    {
+     "term": "Event",
+     "line": "Signal between coroutines",
+     "code": "event = asyncio.Event()"
+    },
+    {
+     "term": "Queue",
+     "line": "Async FIFO for handing work between coroutines",
+     "code": "queue = asyncio.Queue()"
+    }
+   ]
+  },
+  {
+   "heading": "Patterns",
+   "items": [
+    {
+     "term": "Timeout",
+     "line": "Limit how long await can block",
+     "code": "await asyncio.wait_for(coro(), 5)"
+    },
+    {
+     "term": "Shield",
+     "line": "Protect task from outer cancellation",
+     "code": "await asyncio.shield(coro())"
+    },
+    {
+     "term": "Run in executor",
+     "line": "Offload blocking call to thread pool",
+     "code": "await loop.run_in_executor(None, func)"
+    }
+   ]
+  }
+ ]
+}

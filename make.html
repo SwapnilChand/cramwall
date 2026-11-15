@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Make a cheatsheet wallpaper · cramwall</title>
+  <meta name="description" content="Type what you are learning, pick a look and a screen size, download a sharp cheatsheet wallpaper.">
+  <meta name="theme-color" content="#f4f3ef">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body class="maker-page">
+  <header class="bar">
+    <a class="brand" href="/">cramwall</a>
+    <a class="bar-link" href="https://github.com/SwapnilChand/cramwall">GitHub</a>
+  </header>
+
+  <main class="maker">
+    <form class="controls" id="controls" novalidate>
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" aria-selected="true" data-tab="make">Make</button>
+        <button type="button" role="tab" aria-selected="false" data-tab="edit">Edit text</button>
+      </div>
+
+      <div class="panel" data-panel="make">
+        <label class="field">
+          <span class="label">What are you learning?</span>
+          <textarea id="topics" rows="3" maxlength="200" placeholder="kubernetes networking, linux namespaces, tcp states" required></textarea>
+        </label>
+
+        <fieldset class="field">
+          <legend class="label">Screen</legend>
+          <div class="seg" id="kind">
+            <button type="button" data-kind="phone" aria-pressed="true">Phone</button>
+            <button type="button" data-kind="desktop" aria-pressed="false">Desktop</button>
+          </div>
+          <select id="device" aria-label="Device size"></select>
+          <div class="custom-size" id="custom-size" hidden>
+            <input id="cw" type="number" min="480" max="7680" inputmode="numeric" aria-label="Width in pixels">
+            <span>by</span>
+            <input id="ch" type="number" min="480" max="7680" inputmode="numeric" aria-label="Height in pixels">
+          </div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend class="label">Look</legend>
+          <div class="looks" id="looks"></div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend class="label">Colour</legend>
+          <div class="swatches" id="swatches"></div>
+          <div class="color-row">
+            <label class="picker"><input type="color" id="color" value="#8fb3ff"><span>Pick any colour</span></label>
+            <div class="seg small" id="mode">
+              <button type="button" data-mode="dark" aria-pressed="true">Dark</button>
+              <button type="button" data-mode="light" aria-pressed="false">Light</button>
+            </div>
+          </div>
+        </fieldset>
+
+        <details class="field about" id="about">
+          <summary class="label">About you <span class="opt">optional, tunes level and examples</span></summary>
+          <div class="seg small" id="ctx-kind">
+            <button type="button" data-ctx="words" aria-pressed="true">In your words</button>
+            <button type="button" data-ctx="github" aria-pressed="false">GitHub</button>
+            <button type="button" data-ctx="resume" aria-pressed="false">Resume</button>
+          </div>
+          <div data-ctx-panel="words">
+            <textarea id="ctx-words" rows="3" maxlength="400" placeholder="Two years of backend work in Go, new to Kubernetes."></textarea>
+          </div>
+          <div data-ctx-panel="github" hidden>
+            <div class="inline">
+              <input id="ctx-gh" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="GitHub username">
+              <button type="button" class="ghost" id="ctx-gh-read">Read</button>
+            </div>
+          </div>
+          <div data-ctx-panel="resume" hidden>
+            <input id="ctx-file" type="file" accept=".pdf,.txt,.md,application/pdf,text/plain">
+          </div>
+          <p class="hint" id="ctx-status">Used once to pick beginner or advanced and your language. Never stored.</p>
+        </details>
+
+        <button class="primary" id="go" type="submit">Make my wallpaper</button>
+        <p class="status" id="status" aria-live="polite"></p>
+      </div>
+
+      <div class="panel" data-panel="edit" hidden>
+        <p class="hint">Edits show up on the wallpaper as you type.</p>
+        <div id="editor"></div>
+      </div>
+    </form>
+
+    <section class="stage" aria-label="Preview">
+      <div class="frame" id="frame">
+        <canvas id="canvas" aria-label="Wallpaper preview"></canvas>
+        <div class="lock" id="lock" aria-hidden="true"><span class="lock-date"></span><span class="lock-time">9:41</span></div>
+      </div>
+      <div class="stage-actions">
+        <button class="primary" id="download" type="button">Download PNG</button>
+        <label class="check"><input type="checkbox" id="show-lock" checked> Show the lock screen clock</label>
+        <p class="hint" id="meta"></p>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="/src/make.js"></script>
+</body>
+</html>

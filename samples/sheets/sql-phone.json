@@ -1,0 +1,105 @@
+{
+ "title": "SQL joins and indexes",
+ "sections": [
+  {
+   "heading": "Join Types",
+   "items": [
+    {
+     "term": "Inner Join",
+     "line": "Returns rows where keys match in both tables",
+     "code": "INNER JOIN b ON a.id=b.id"
+    },
+    {
+     "term": "Left Join",
+     "line": "Keeps all rows from left table, fills nulls",
+     "code": "LEFT JOIN b ON a.id=b.id"
+    },
+    {
+     "term": "Right Join",
+     "line": "Keeps all rows from right table, fills nulls",
+     "code": "RIGHT JOIN b ON a.id=b.id"
+    },
+    {
+     "term": "Full Join",
+     "line": "Returns rows when either side matches, else nulls",
+     "code": "FULL JOIN b ON a.id=b.id"
+    }
+   ]
+  },
+  {
+   "heading": "Join Syntax",
+   "items": [
+    {
+     "term": "ON Clause",
+     "line": "Specifies join condition with column comparison",
+     "code": "ON a.id = b.id"
+    },
+    {
+     "term": "USING Clause",
+     "line": "Joins on columns with same name in both tables",
+     "code": "USING (id)"
+    },
+    {
+     "term": "NATURAL Join",
+     "line": "Implicitly joins on all same-named columns",
+     "code": "NATURAL JOIN b"
+    },
+    {
+     "term": "CROSS Join",
+     "line": "Produces Cartesian product of both tables",
+     "code": "CROSS JOIN b"
+    }
+   ]
+  },
+  {
+   "heading": "Index Types",
+   "items": [
+    {
+     "term": "BTree Index",
+     "line": "Default index, good for range queries",
+     "code": "CREATE INDEX idx ON tbl(col)"
+    },
+    {
+     "term": "Hash Index",
+     "line": "Fast equality lookups, not for range",
+     "code": "CREATE INDEX idx ON tbl USING hash(col)"
+    },
+    {
+     "term": "GIN Index",
+     "line": "Supports array and full-text search",
+     "code": "CREATE INDEX idx ON tbl USING gin(col)"
+    },
+    {
+     "term": "BRIN Index",
+     "line": "Efficient for large, ordered data",
+     "code": "CREATE INDEX idx ON tbl USING brin(col)"
+    }
+   ]
+  },
+  {
+   "heading": "Index Usage",
+   "items": [
+    {
+     "term": "EXPLAIN Plan",
+     "line": "Shows if index is used for a query",
+     "code": "EXPLAIN SELECT * FROM tbl WHERE col=5"
+    },
+    {
+     "term": "Covering Index",
+     "line": "Index includes all columns needed, avoids table read",
+     "code": "CREATE INDEX idx ON tbl(col, other)"
+    },
+    {
+     "term": "Partial Index",
+     "line": "Index only rows meeting a condition",
+     "code": "CREATE INDEX idx ON tbl(col) WHERE active"
+    },
+    {
+     "term": "Unique Index",
+     "line": "Enforces uniqueness of column values",
+     "code": "CREATE UNIQUE INDEX idx ON tbl(col)"
+    }
+   ]
+  }
+ ]
+}

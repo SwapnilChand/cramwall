@@ -1,0 +1,185 @@
+{
+ "title": "Piano chords and scales",
+ "sections": [
+  {
+   "heading": "Scales",
+   "items": [
+    {
+     "term": "Major scale",
+     "line": "Whole step pattern W W H W W W H",
+     "code": "C D E F G A B"
+    },
+    {
+     "term": "Natural minor",
+     "line": "Relative minor shares key signature",
+     "code": "A B C D E F G"
+    },
+    {
+     "term": "Harmonic minor",
+     "line": "Raised seventh creates leading tone",
+     "code": "A B C D E F G#"
+    },
+    {
+     "term": "Melodic minor",
+     "line": "Ascending raises sixth and seventh",
+     "code": "A B C D E F# G#"
+    },
+    {
+     "term": "Pentatonic",
+     "line": "Five-note scale common in improvisation",
+     "code": "C D E G A"
+    }
+   ]
+  },
+  {
+   "heading": "Triads",
+   "items": [
+    {
+     "term": "Major triad",
+     "line": "Root major third perfect fifth",
+     "code": "C E G"
+    },
+    {
+     "term": "Minor triad",
+     "line": "Root minor third perfect fifth",
+     "code": "C Eb G"
+    },
+    {
+     "term": "Diminished",
+     "line": "Root minor third diminished fifth",
+     "code": "C Eb Gb"
+    },
+    {
+     "term": "Augmented",
+     "line": "Root major third augmented fifth",
+     "code": "C E G#"
+    },
+    {
+     "term": "Inverted triad",
+     "line": "First inversion moves third to bass",
+     "code": "E G C"
+    }
+   ]
+  },
+  {
+   "heading": "Sevenths",
+   "items": [
+    {
+     "term": "Dominant 7",
+     "line": "Major triad plus minor seventh",
+     "code": "C E G Bb"
+    },
+    {
+     "term": "Major 7",
+     "line": "Major triad plus major seventh",
+     "code": "C E G B"
+    },
+    {
+     "term": "Minor 7",
+     "line": "Minor triad plus minor seventh",
+     "code": "C Eb G Bb"
+    },
+    {
+     "term": "Half-diminished",
+     "line": "Diminished triad plus minor seventh",
+     "code": "C Eb Gb Bb"
+    },
+    {
+     "term": "Fully diminished",
+     "line": "Diminished triad plus diminished seventh",
+     "code": "C Eb Gb Bbb"
+    }
+   ]
+  },
+  {
+   "heading": "Inversions",
+   "items": [
+    {
+     "term": "Root position",
+     "line": "Root is lowest note",
+     "code": "C E G"
+    },
+    {
+     "term": "1st inversion",
+     "line": "Third in bass",
+     "code": "E G C"
+    },
+    {
+     "term": "2nd inversion",
+     "line": "Fifth in bass",
+     "code": "G C E"
+    },
+    {
+     "term": "Drop 2",
+     "line": "Second note dropped an octave",
+     "code": "C G E"
+    },
+    {
+     "term": "Closed voicing",
+     "line": "All chord tones within an octave",
+     "code": "C E G"
+    }
+   ]
+  },
+  {
+   "heading": "Progressions",
+   "items": [
+    {
+     "term": "II-V-I",
+     "line": "Jazz turnaround in major",
+     "code": "Dm7 G7 Cmaj7"
+    },
+    {
+     "term": "Circle of fifths",
+     "line": "Root moves down a fifth each step",
+     "code": "C G D A E B"
+    },
+    {
+     "term": "Plagal cadence",
+     "line": "IV to I resolution",
+     "code": "F C"
+    },
+    {
+     "term": "Deceptive cadence",
+     "line": "V to vi surprise",
+     "code": "G Am"
+    },
+    {
+     "term": "Backdoor",
+     "line": "\u266dVII7 to I major",
+     "code": "Bb7 C"
+    }
+   ]
+  },
+  {
+   "heading": "Modes",
+   "items": [
+    {
+     "term": "Dorian mode",
+     "line": "Minor with raised 6th",
+     "code": "D E F G A B C"
+    },
+    {
+     "term": "Phrygian mode",
+     "line": "Minor with flat 2nd",
+     "code": "E F G A B C D"
+    },
+    {
+     "term": "Lydian mode",
+     "line": "Major with raised 4th",
+     "code": "F G A B C D E"
+    },
+    {
+     "term": "Mixolydian mode",
+     "line": "Major with flat 7th",
+     "code": "G A B C D E F"
+    },
+    {
+     "term": "Locrian mode",
+     "line": "Half-diminished scale",
+     "code": "A Bb C D Eb F G"
+    }
+   ]
+  }
+ ]
+}

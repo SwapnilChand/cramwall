@@ -1,0 +1,215 @@
+{
+ "title": "Kubernetes networking",
+ "sections": [
+  {
+   "heading": "Basics",
+   "items": [
+    {
+     "term": "Pod CIDR",
+     "line": "IP range assigned to pods in a cluster",
+     "code": "--pod-network-cidr=10.244.0.0/16"
+    },
+    {
+     "term": "Service IP",
+     "line": "Virtual IP allocated to a Service",
+     "code": "spec.clusterIP"
+    },
+    {
+     "term": "kube-proxy",
+     "line": "Implements Service virtual IP via iptables",
+     "code": "kube-proxy --mode=iptables"
+    },
+    {
+     "term": "CNI plugin",
+     "line": "Container Network Interface driver",
+     "code": "CNI plugins directory /etc/cni/net.d"
+    },
+    {
+     "term": "Namespace",
+     "line": "Linux isolation for processes",
+     "code": "unshare -n"
+    }
+   ]
+  },
+  {
+   "heading": "Services",
+   "items": [
+    {
+     "term": "ClusterIP",
+     "line": "Default Service type reachable inside cluster",
+     "code": "type: ClusterIP"
+    },
+    {
+     "term": "NodePort",
+     "line": "Exposes Service on each node's IP",
+     "code": "type: NodePort"
+    },
+    {
+     "term": "LoadBalancer",
+     "line": "Provisions external LB via cloud",
+     "code": "type: LoadBalancer"
+    },
+    {
+     "term": "ExternalIP",
+     "line": "Assigns static external address to Service",
+     "code": "externalIPs: [\"1.2.3.4\"]"
+    },
+    {
+     "term": "Headless",
+     "line": "Service without cluster IP for DNS only",
+     "code": "clusterIP: None"
+    }
+   ]
+  },
+  {
+   "heading": "Policies",
+   "items": [
+    {
+     "term": "Ingress rule",
+     "line": "Allows incoming traffic to selected pods",
+     "code": "policyTypes: [\"Ingress\"]"
+    },
+    {
+     "term": "Egress rule",
+     "line": "Controls outbound traffic from pods",
+     "code": "policyTypes: [\"Egress\"]"
+    },
+    {
+     "term": "Pod selector",
+     "line": "Chooses pods the policy applies to",
+     "code": "podSelector: {}"
+    },
+    {
+     "term": "Namespace selector",
+     "line": "Targets pods in other namespaces",
+     "code": "namespaceSelector: {}"
+    },
+    {
+     "term": "Port block",
+     "line": "Restricts traffic to specific ports",
+     "code": "ports: [{port: 80}]"
+    }
+   ]
+  },
+  {
+   "heading": "CNI",
+   "items": [
+    {
+     "term": "Flannel",
+     "line": "Simple overlay using VXLAN",
+     "code": "flannel --iface=eth0"
+    },
+    {
+     "term": "Calico",
+     "line": "Provides network policy with BGP",
+     "code": "calicoctl node run"
+    },
+    {
+     "term": "Cilium",
+     "line": "eBPF based CNI with identity",
+     "code": "cilium-agent -D"
+    },
+    {
+     "term": "Bridge mode",
+     "line": "Connects pods to host bridge",
+     "code": "bridge.cni.conf"
+    },
+    {
+     "term": "IPAM",
+     "line": "Assigns pod IPs via CNI",
+     "code": "\"type\": \"host-local\""
+    }
+   ]
+  },
+  {
+   "heading": "iptables",
+   "items": [
+    {
+     "term": "NAT table",
+     "line": "Handles pod to external address translation",
+     "code": "iptables -t nat -L"
+    },
+    {
+     "term": "FORWARD chain",
+     "line": "Controls packet forwarding between interfaces",
+     "code": "iptables -L FORWARD"
+    },
+    {
+     "term": "KUBE-SERVICES",
+     "line": "Chain containing Service rules",
+     "code": "iptables -t nat -S KUBE-SERVICES"
+    },
+    {
+     "term": "KUBE-FIREWALL",
+     "line": "Enforces NetworkPolicy",
+     "code": "iptables -S KUBE-FIREWALL"
+    },
+    {
+     "term": "Masquerade",
+     "line": "SNAT for pod egress",
+     "code": "iptables -t nat -A POSTROUTING -j MASQUERADE"
+    }
+   ]
+  },
+  {
+   "heading": "Namespaces",
+   "items": [
+    {
+     "term": "netns list",
+     "line": "Shows existing network namespaces",
+     "code": "ip netns list"
+    },
+    {
+     "term": "netns exec",
+     "line": "Run command inside a netns",
+     "code": "ip netns exec ns1 bash"
+    },
+    {
+     "term": "veth pair",
+     "line": "Connects host and namespace interfaces",
+     "code": "ip link add veth0 type veth peer name veth1"
+    },
+    {
+     "term": "setns",
+     "line": "Switch current process to a namespace",
+     "code": "nsenter --net=/var/run/netns/ns1"
+    },
+    {
+     "term": "ip netns add",
+     "line": "Create a new network namespace",
+     "code": "ip netns add ns1"
+    }
+   ]
+  },
+  {
+   "heading": "Debugging",
+   "items": [
+    {
+     "term": "kubectl exec",
+     "line": "Run a command inside a pod",
+     "code": "kubectl exec -it pod -- sh"
+    },
+    {
+     "term": "tcpdump ns",
+     "line": "Capture traffic inside a netns",
+     "code": "ip netns exec ns1 tcpdump -i any"
+    },
+    {
+     "term": "nslookup svc",
+     "line": "Resolve Service DNS name",
+     "code": "nslookup mysvc.default.svc.cluster.local"
+    },
+    {
+     "term": "curl podip",
+     "line": "Test connectivity to pod IP",
+     "code": "curl http://10.244.1.5:80"
+    },
+    {
+     "term": "kube-proxy logs",
+     "line": "View proxy events for Service",
+     "code": "journalctl -u kube-proxy"
+    }
+   ]
+  }
+ ]
+}
